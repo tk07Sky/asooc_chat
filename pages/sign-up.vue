@@ -10,15 +10,15 @@
           <v-container fluid>
             <v-form ref="form">
               <v-layout row wrap>
-                <v-text-field type="text" v-model="email" label="メールアドレス" required></v-text-field>
+                <v-text-field type="text" v-model="$v.email.$model" label="メールアドレス" required :error-messages="emailErrors"></v-text-field>
               </v-layout>
 
               <v-layout row wrap>
-                <v-text-field type="password" v-model="password" label="パスワード" required></v-text-field>
+                <v-text-field type="password" v-model="$v.password.$model" label="パスワード" required :error-messages="passwordErrors"></v-text-field>
               </v-layout>
 
               <v-layout row wrap>
-                <v-text-field type="password" v-model="passwordConfirm" label="パスワード再入力" required></v-text-field>
+                <v-text-field type="password" v-model="$v.passwordConfirm.$model" label="パスワード再入力" required :error-messages="passwordConfirmErrors"></v-text-field>
               </v-layout>
 
               <v-layout row wrap justify-center>
@@ -38,6 +38,12 @@
 </template>
 
 <script>
+import { required, email, sameAs, minLength } from 'vuelidate/lib/validators'
+import {
+  validateEmail,
+  validatePassword,
+  validatePasswordConfirm
+} from '~/utils/validations'
 import { mapActions } from 'vuex'
 export default {
   head() {
@@ -52,9 +58,40 @@ export default {
     passwordConfirm: ''
   }),
 
+  validations: {
+    email: {
+      required,
+      email
+    },
+    password: {
+      required,
+      min: minLength(8)
+    },
+    passwordConfirm: {
+      required,
+      confirm: sameAs('password')
+    }
+  },
+
+  computed: {
+    emailErrors() {
+      return validateEmail(this.$v.email)
+    },
+
+    passwordErrors() {
+      return validatePassword(this.$v.password)
+    },
+
+    passwordConfirmErrors() {
+      return validatePasswordConfirm(this.$v.passwordConfirm)
+    }
+  },
+
   methods: {
     ...mapActions('auth', { authSignUp: 'SIGN_UP' }),
     async signUp() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
       if (this.password !== this.passwordConfirm) {
         console.log('error')
         return
