@@ -10,11 +10,11 @@
           <v-container fluid>
             <v-form ref="form">
               <v-layout row wrap>
-                <v-text-field type="text" v-model="email" label="メールアドレス" required></v-text-field>
+                <v-text-field type="email" v-model="$v.email.$model" label="メールアドレス" required :error-messages="emailErrors"></v-text-field>
               </v-layout>
 
               <v-layout row wrap>
-                <v-text-field type="password" v-model="password" label="パスワード" required></v-text-field>
+                <v-text-field type="password" v-model="$v.password.$model" label="パスワード" required :error-messages="passwordErrors"></v-text-field>
               </v-layout>
 
               <v-layout row wrap justify-center>
@@ -34,6 +34,8 @@
 </template>
 
 <script>
+import { required, email } from 'vuelidate/lib/validators'
+import { validateEmail, validatePassword } from '~/utils/validations'
 import { mapActions } from 'vuex'
 export default {
   head() {
@@ -47,9 +49,31 @@ export default {
     password: ''
   }),
 
+  validations: {
+    email: {
+      required,
+      email
+    },
+    password: {
+      required
+    }
+  },
+
+  computed: {
+    emailErrors() {
+      return validateEmail(this.$v.email)
+    },
+
+    passwordErrors() {
+      return validatePassword(this.$v.password)
+    }
+  },
+
   methods: {
     ...mapActions('auth', { authSignIn: 'SIGN_IN' }),
     async signIn() {
+      this.$v.$touch()
+      if (this.$v.$invalid) return
       const params = {
         email: this.email,
         password: this.password
