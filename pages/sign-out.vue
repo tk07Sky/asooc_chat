@@ -4,9 +4,13 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { unsetAll as lsUnsetAll } from '~/utils/local-storage'
+import { unsetAll as cUnsetAll } from '~/utils/cookie'
 export default {
   async created() {
     await this.authSignOut()
+    lsUnsetAll()
+    cUnsetAll()
     await new Promise(resolve => setTimeout(resolve, 1000))
     this.$router.push('/sign-in')
   },
