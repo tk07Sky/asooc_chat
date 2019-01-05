@@ -79,7 +79,7 @@ export default {
         password: this.password
       }
       const user = await this.authSignIn({ params: params })
-      console.log(user)
+      this.$router.push('/')
     },
 
     goSignUp() {

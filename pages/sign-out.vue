@@ -9,8 +9,11 @@ import { unsetAll as cUnsetAll } from '~/utils/cookie'
 export default {
   async created() {
     await this.authSignOut()
-    lsUnsetAll()
-    cUnsetAll()
+    if (process.client) {
+      lsUnsetAll()
+    } else {
+      cUnsetAll()
+    }
     await new Promise(resolve => setTimeout(resolve, 1000))
     this.$router.push('/sign-in')
   },
