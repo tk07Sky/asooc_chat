@@ -10,6 +10,10 @@
           <v-container fluid>
             <v-form ref="form">
               <v-layout row wrap>
+                <v-text-field type="text" v-model="$v.userName.$model" label="ユーザー名" required :error-messages="userNameErrors"></v-text-field>
+              </v-layout>
+
+              <v-layout row wrap>
                 <v-text-field type="text" v-model="$v.email.$model" label="メールアドレス" required :error-messages="emailErrors"></v-text-field>
               </v-layout>
 
@@ -30,6 +34,10 @@
               </v-layout>
             </v-form>
           </v-container>
+          <v-snackbar v-model="snackbar" bottom right color="error">
+            既に登録されているメールアドレスです
+            <v-btn flat color="white" @click="snackClose()">閉じる</v-btn>
+          </v-snackbar>
         </v-card>
 
       </v-flex>
@@ -40,11 +48,12 @@
 <script>
 import { required, email, sameAs, minLength } from 'vuelidate/lib/validators'
 import {
+  validateUserName,
   validateEmail,
   validatePassword,
   validatePasswordConfirm
 } from '~/utils/validations'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   head() {
     return {
@@ -53,12 +62,17 @@ export default {
   },
 
   data: () => ({
+    userName: '',
     email: '',
     password: '',
-    passwordConfirm: ''
+    passwordConfirm: '',
+    snackbar: false
   }),
 
   validations: {
+    userName: {
+      required
+    },
     email: {
       required,
       email
@@ -74,6 +88,11 @@ export default {
   },
 
   computed: {
+    ...mapGetters('auth', { authGetUser: 'getUser' }),
+    userNameErrors() {
+      return validateUserName(this.$v.userName)
+    },
+
     emailErrors() {
       return validateEmail(this.$v.email)
     },
@@ -88,6 +107,7 @@ export default {
   },
 
   methods: {
+    ...mapActions('user', { userAdd: 'ADD_USER' }),
     ...mapActions('auth', { authSignUp: 'SIGN_UP' }),
     async signUp() {
       this.$v.$touch()
@@ -96,16 +116,35 @@ export default {
         console.log('error')
         return
       }
-      const params = {
+      const signInParams = {
         email: this.email,
         password: this.password
       }
-      const user = await this.authSignUp({ params: params })
-      console.log(user)
+      await this.authSignUp({ params: signInParams }).catch(e => {
+        if (e.code === 'auth/email-already-in-use') {
+          this.snackShow()
+          throw new Error('Email already in use.')
+        }
+        throw new Error('Sign up error.')
+      })
+      const addUserParams = {
+        uid: this.authGetUser.uid,
+        userName: this.userName
+      }
+      await this.userAdd({ params: addUserParams })
+      this.$router.push('/')
     },
 
     goSignIn() {
       this.$router.push('/sign-in')
+    },
+
+    snackShow() {
+      this.snackbar = true
+    },
+
+    snackClose() {
+      this.snackbar = false
     }
   }
 }

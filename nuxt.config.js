@@ -2,6 +2,9 @@ const pkg = require('./package')
 
 module.exports = {
   mode: 'universal',
+  router: {
+    middleware: 'check-auth'
+  },
 
   /*
   ** Headers of the page
@@ -71,5 +74,8 @@ module.exports = {
         })
       }
     }
+  },
+  generate: {
+    fallback: true // '404.html' を使用したい場合
   }
 }

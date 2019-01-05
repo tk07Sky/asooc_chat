@@ -1,5 +1,10 @@
+import {
+  setUid as lsSetUid,
+  setEmail as lsSetEmail
+} from '~/utils/local-storage'
+import { setUid as cSetUid, setEmail as cSetEmail } from '~/utils/cookie'
+
 import firebase from '~/plugins/firebase'
-import 'firebase/firestore'
 const auth = firebase.auth()
 
 export default {
@@ -9,11 +14,14 @@ export default {
         params['email'],
         params['password']
       )
+      lsSetUid(response.user.uid)
+      cSetUid(response.user.uid)
+      lsSetEmail(response.user.email)
+      cSetEmail(response.user.email)
       commit('setUser', response.user)
       return response.user
     } catch (error) {
-      console.log('登録失敗')
-      console.log(error)
+      throw error
     }
   },
 
@@ -23,6 +31,10 @@ export default {
         params['email'],
         params['password']
       )
+      lsSetUid(response.user.uid)
+      cSetUid(response.user.uid)
+      lsSetEmail(response.user.email)
+      cSetEmail(response.user.email)
       commit('setUser', response.user)
       return response.user
     } catch (error) {
