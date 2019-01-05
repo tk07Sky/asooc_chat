@@ -23,3 +23,10 @@ export const validatePasswordConfirm = validate => {
   !validate.confirm && errors.push('パスワードが一致しません')
   return errors
 }
+
+export const validateUserName = validate => {
+  let errors = []
+  if (!validate.$dirty) return errors
+  !validate.required && errors.push('ユーザー名を入力してください')
+  return errors
+}
