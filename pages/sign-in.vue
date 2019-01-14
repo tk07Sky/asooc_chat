@@ -26,6 +26,10 @@
               </v-layout>
             </v-form>
           </v-container>
+          <v-snackbar v-model="snackbar" bottom right color="error">
+            アカウントが見つかりませんでした。
+            <v-btn flat color="white" @click="snackClose()">閉じる</v-btn>
+          </v-snackbar>
         </v-card>
 
       </v-flex>
@@ -46,7 +50,8 @@ export default {
 
   data: () => ({
     email: '',
-    password: ''
+    password: '',
+    snackbar: false
   }),
 
   validations: {
@@ -78,12 +83,26 @@ export default {
         email: this.email,
         password: this.password
       }
-      const user = await this.authSignIn({ params: params })
+      const user = await this.authSignIn({ params: params }).catch(err => {
+        if (err.code === 'auth/user-not-found') {
+          this.snackShow()
+          throw new Error('User not found.')
+        }
+        throw new Error('Sign in error.')
+      })
       this.$router.push('/')
     },
 
     goSignUp() {
       this.$router.push('/sign-up')
+    },
+
+    snackShow() {
+      this.snackbar = true
+    },
+
+    snackClose() {
+      this.snackbar = false
     }
   }
 }
