@@ -38,8 +38,7 @@ export default {
       commit('setUser', response.user)
       return response.user
     } catch (error) {
-      console.log('認証失敗')
-      console.log(error)
+      throw error
     }
   },
 
