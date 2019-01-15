@@ -1,5 +1,5 @@
 <template>
-<div>
+<div ref="message">
   <div
     class="message"
     v-for="(message,index) in messages"
@@ -21,6 +21,23 @@ export default {
   props: {
     uid: { type: String, required: true },
     messages: { type: Array, required: false }
+  },
+  watch: {
+    messages: {
+      async handler() {
+        await new Promise(resolve => setTimeout(resolve, 100))
+        this.setMessageScrollHeight()
+      },
+      deep: true
+    }
+  },
+  mounted() {
+    this.setMessageScrollHeight()
+  },
+  methods: {
+    setMessageScrollHeight() {
+      this.$emit('set-message-scroll-height', this.$refs.message.scrollHeight)
+    }
   }
 }
 </script>

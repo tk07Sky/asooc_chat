@@ -1,6 +1,12 @@
 <template>
   <div class="chat">
-    <messages class="content-area" v-if="chatGetChats" :uid="authGetUser.uid" :messages="chatGetChats" />
+    <div ref="chat" class="content-area">
+      <messages
+        v-if="chatGetChats"
+        @set-message-scroll-height="setMessageScrollHeight"
+        :uid="authGetUser.uid"
+        :messages="chatGetChats" />
+    </div>
     <form class="input-message" @submit.prevent="addMessage">
       <input v-model="content" placeholder="メッセージを入力してください">
     </form>
@@ -12,9 +18,16 @@ import { mapActions, mapGetters } from 'vuex'
 import Messages from '~/components/Messages.vue'
 
 export default {
+  head() {
+    return {
+      title: 'オープンキャンパスチャット'
+    }
+  },
   layout: 'chat',
+  middleware: 'authenticated',
   data: () => ({
-    content: ''
+    content: '',
+    messageScrollHeight: 0
   }),
   components: {
     Messages
@@ -22,6 +35,11 @@ export default {
   created() {
     this.chatInit()
     this.userShow({ uid: this.authGetUser.uid })
+  },
+  watch: {
+    messageScrollHeight() {
+      this.scrollToEnd()
+    }
   },
   computed: {
     ...mapGetters('auth', { authGetUser: 'getUser' }),
@@ -35,12 +53,22 @@ export default {
       chatAddMessage: 'ADD_MESSAGE'
     }),
     async addMessage() {
+      if (!this.content) return
       this.chatAddMessage({
         uid: this.authGetUser.uid,
         userName: this.userGetName,
         content: this.content
       })
       this.content = ''
+    },
+    scrollToEnd() {
+      let currentHeight = this.$refs.chat.scrollHeight
+      let difference = this.messageScrollHeight - this.$refs.chat.clientHeight
+      var container = this.$el.querySelector('.content-area')
+      container.scrollTop = difference
+    },
+    setMessageScrollHeight(scrollHeight) {
+      this.messageScrollHeight = scrollHeight
     }
   }
 }

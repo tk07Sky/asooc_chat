@@ -9,7 +9,7 @@
       <v-card>
         <v-card-title class="headline">ようそこ、{{ userGetName }}さん！</v-card-title>
         <v-card-text>
-          <p></p>
+          <v-btn block color="success" @click="goChat">チャットを始める</v-btn>
         </v-card-text>
         <v-card-actions>
           <v-spacer/>
@@ -34,7 +34,10 @@ export default {
     ...mapGetters('user', { userGetName: 'getUserName' })
   },
   methods: {
-    ...mapActions('user', { userShow: 'SHOW_USER' })
+    ...mapActions('user', { userShow: 'SHOW_USER' }),
+    goChat() {
+      this.$router.push('/chats')
+    }
   }
 }
 </script>
