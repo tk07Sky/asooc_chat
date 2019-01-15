@@ -8,7 +8,7 @@
 
         <v-card>
           <v-container fluid>
-            <v-form ref="form">
+            <form @submit.prevent="signIn()">
               <v-layout row wrap>
                 <v-text-field type="email" v-model="$v.email.$model" label="メールアドレス" required :error-messages="emailErrors"></v-text-field>
               </v-layout>
@@ -18,13 +18,13 @@
               </v-layout>
 
               <v-layout row wrap justify-center>
-                <v-btn block color="success" @click="signIn()">ログイン</v-btn>
+                <v-btn type="submit" :loading="loading" block color="success">ログイン</v-btn>
               </v-layout>
 
               <v-layout row wrap justify-center>
                 <v-btn flat color="primary" @click="goSignUp()">アカウントをお持ちでない方はこちら</v-btn>
               </v-layout>
-            </v-form>
+            </form>
           </v-container>
           <v-snackbar v-model="snackbar" bottom right color="error">
             アカウントが見つかりませんでした。
@@ -51,7 +51,8 @@ export default {
   data: () => ({
     email: '',
     password: '',
-    snackbar: false
+    snackbar: false,
+    loading: false
   }),
 
   validations: {
@@ -79,6 +80,7 @@ export default {
     async signIn() {
       this.$v.$touch()
       if (this.$v.$invalid) return
+      this.loading = true
       const params = {
         email: this.email,
         password: this.password
@@ -86,10 +88,13 @@ export default {
       const user = await this.authSignIn({ params: params }).catch(err => {
         if (err.code === 'auth/user-not-found') {
           this.snackShow()
+          this.loading = false
           throw new Error('User not found.')
         }
+        this.loading = false
         throw new Error('Sign in error.')
       })
+      this.loading = false
       this.$router.push('/')
     },
 

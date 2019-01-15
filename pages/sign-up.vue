@@ -8,7 +8,7 @@
 
         <v-card>
           <v-container fluid>
-            <v-form ref="form">
+            <form @submit.prevent="signUp()">
               <v-layout row wrap>
                 <v-text-field type="text" v-model="$v.userName.$model" label="ユーザー名" required :error-messages="userNameErrors"></v-text-field>
               </v-layout>
@@ -26,13 +26,13 @@
               </v-layout>
 
               <v-layout row wrap justify-center>
-                <v-btn block color="success" @click="signUp()">登録</v-btn>
+                <v-btn type="submit" block color="success" :loading="loading">登録</v-btn>
               </v-layout>
 
               <v-layout row wrap justify-center>
                 <v-btn flat color="primary" @click="goSignIn()">アカウントをお持ちの方はこちら</v-btn>
               </v-layout>
-            </v-form>
+            </form>
           </v-container>
           <v-snackbar v-model="snackbar" bottom right color="error">
             既に登録されているメールアドレスです
@@ -66,7 +66,8 @@ export default {
     email: '',
     password: '',
     passwordConfirm: '',
-    snackbar: false
+    snackbar: false,
+    loading: false
   }),
 
   validations: {
@@ -116,6 +117,7 @@ export default {
         console.log('error')
         return
       }
+      this.loading = true
       const signInParams = {
         email: this.email,
         password: this.password
@@ -123,8 +125,10 @@ export default {
       await this.authSignUp({ params: signInParams }).catch(e => {
         if (e.code === 'auth/email-already-in-use') {
           this.snackShow()
+          this.loading = false
           throw new Error('Email already in use.')
         }
+        this.loading = false
         throw new Error('Sign up error.')
       })
       const addUserParams = {
@@ -132,6 +136,7 @@ export default {
         userName: this.userName
       }
       await this.userAdd({ params: addUserParams })
+      this.loading = false
       this.$router.push('/')
     },
 
