@@ -1,0 +1,19 @@
+{
+  "projects": {
+    "default": "asooc-chat"
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/404.html"
+      }
+    ]
+  }
+}

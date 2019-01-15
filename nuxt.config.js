@@ -2,6 +2,9 @@ const pkg = require('./package')
 
 module.exports = {
   mode: 'universal',
+  router: {
+    middleware: 'check-auth'
+  },
 
   /*
   ** Headers of the page
@@ -10,12 +13,20 @@ module.exports = {
     title: pkg.name,
     meta: [
       { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      {
+        name: 'viewport',
+        content:
+          'width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no'
+      },
       { hid: 'description', name: 'description', content: pkg.description }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
+      {
+        rel: 'stylesheet',
+        href:
+          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
+      }
     ]
   },
 
@@ -27,22 +38,19 @@ module.exports = {
   /*
   ** Global CSS
   */
-  css: [
-    '~/assets/style/app.styl'
-  ],
+  css: ['~/assets/style/app.styl'],
 
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [
-    '@/plugins/vuetify'
-  ],
+  plugins: ['@/plugins/vuetify', '@/plugins/vuelidate', '@/plugins/firestore'],
 
   /*
   ** Nuxt.js modules
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
+    '@nuxtjs/dotenv',
     '@nuxtjs/axios'
   ],
   /*
@@ -70,5 +78,8 @@ module.exports = {
         })
       }
     }
+  },
+  generate: {
+    fallback: true // '404.html' を使用したい場合
   }
 }

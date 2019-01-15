@@ -33,9 +33,7 @@
       <v-toolbar-title v-text="title"/>
     </v-toolbar>
     <v-content>
-      <v-container>
-        <nuxt />
-      </v-container>
+      <nuxt />
     </v-content>
   </v-app>
 </template>
