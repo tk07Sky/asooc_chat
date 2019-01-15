@@ -59,6 +59,9 @@ export default {
   watch: {
     getIsAuth() {
       this.items.pop()
+      if (this.items[this.items.length - 1].icon === 'chat') {
+        this.items.pop()
+      }
       this.setLoginNavItem()
     }
   },
@@ -74,6 +77,11 @@ export default {
         this.$set(loginState, 'icon', 'lock')
         this.$set(loginState, 'title', 'ログアウト')
         this.$set(loginState, 'to', '/sign-out')
+        const chatItem = {}
+        this.$set(chatItem, 'icon', 'chat')
+        this.$set(chatItem, 'title', 'チャット')
+        this.$set(chatItem, 'to', '/chats')
+        this.items.push(chatItem)
       } else {
         this.$set(loginState, 'icon', 'lock_open')
         this.$set(loginState, 'title', 'ログイン')
