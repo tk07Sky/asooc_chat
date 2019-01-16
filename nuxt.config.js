@@ -10,7 +10,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    title: 'オープンキャンパスチャット',
     meta: [
       { charset: 'utf-8' },
       {
