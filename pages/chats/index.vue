@@ -18,11 +18,6 @@ import { mapActions, mapGetters } from 'vuex'
 import Messages from '~/components/Messages.vue'
 
 export default {
-  head() {
-    return {
-      title: 'オープンキャンパスチャット'
-    }
-  },
   layout: 'chat',
   middleware: 'authenticated',
   data: () => ({
